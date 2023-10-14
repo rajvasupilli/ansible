@@ -1,0 +1,30 @@
+---
+- name: Ensure Nginx is installed and running
+  hosts: web_servers  # Replace with the name of your target hosts or group
+  become: yes  # Run tasks with sudo (or equivalent) privileges
+
+  tasks:
+    - name: Update apt cache (for Debian/Ubuntu)
+      apt:
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: Install Nginx
+      package:
+        name: nginx
+        state: present
+      when: ansible_os_family == 'Debian'
+
+    - name: Start Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: Ensure Nginx is running (for Red Hat/CentOS)
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+      when: ansible_os_family == 'RedHat'
